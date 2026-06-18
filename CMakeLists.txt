@@ -9,8 +9,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(include)
 
 # Main executable source files
+# Main executable source files
 set(SOURCE_FILES
     src/Trie.cpp
+    src/DocumentParser.cpp
     src/main.cpp
 )
 
@@ -23,3 +25,5 @@ enable_testing()
 # Build the Unit Test executable
 add_executable(run_tests tests/test_trie.cpp src/Trie.cpp)
 add_test(NAME TrieTestSuite COMMAND run_tests)
+
+# Main executable source files
