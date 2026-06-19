@@ -1,51 +1,64 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 #include "DocumentParser.hpp"
 #include "InvertedIndex.hpp"
 
 int main() {
     InvertedIndex search_engine;
 
-    // Simulate Document 1 content
-    std::string doc1_name = "doc1.txt";
-    std::string doc1_content = "Data structures and algorithms are fundamental to computer science.";
-    std::string clean_doc1 = DocumentParser::normalize_text(doc1_content);
-    std::vector<std::string> tokens_doc1 = DocumentParser::tokenize(clean_doc1);
-    search_engine.index_document(doc1_name, tokens_doc1);
+    // Setup Mock Document Database
+    std::vector<std::pair<std::string, std::string>> database = {
+        {"doc1.txt", "Data structures and algorithms form the foundation of computer science."},
+        {"doc2.txt", "Computer networks routing algorithms handle streaming traffic data efficiently."},
+        {"doc3.txt", "Advanced database structures optimize index lookups for computer systems."}
+    };
 
-    // Simulate Document 2 content
-    std::string doc2_name = "doc2.txt";
-    std::string doc2_content = "Computer networks routing algorithms handle traffic processing efficiently.";
-    std::string clean_doc2 = DocumentParser::normalize_text(doc2_content);
-    std::vector<std::string> tokens_doc2 = DocumentParser::tokenize(clean_doc2);
-    search_engine.index_document(doc2_name, tokens_doc2);
+    for (const auto& item : database) {
+        std::vector<std::string> tokens = DocumentParser::tokenize(DocumentParser::normalize_text(item.second));
+        search_engine.index_document(item.first, tokens);
+    }
 
-    std::cout << "===================================================\n";
-    std::cout << "    Day 4 Validation - Inverted Index Database    \n";
-    std::cout << "===================================================\n";
-    std::cout << "Indexed 2 documents successfully!\n";
-    std::cout << "Try searching for terms like 'algorithms', 'computer', or 'networks'.\n\n";
+    std::cout << "=========================================================\n";
+    std::cout << "  Day 5 - Engineered Engine & Performance Profiling CLI \n";
+    std::cout << "=========================================================\n";
+    std::cout << "Indexed 3 documents. System optimized.\n";
+    std::cout << "Try multi-word compound queries (e.g., 'computer algorithms').\n\n";
 
-    std::string query;
+    std::string raw_query;
     while (true) {
-        std::cout << "Search Term (or 'exit'): ";
-        std::cin >> query;
+        std::cout << "Search Engine 🔍 ";
+        if (!std::getline(std::cin, raw_query) || raw_query == "exit") {
+            break;
+        }
+        if (raw_query.empty()) continue;
 
-        if (query == "exit") break;
+        // Start High-Precision Stop-watch
+        auto start_time = std::chrono::high_resolution_clock::now();
 
-        // Normalize the search term to match index format
-        std::string clean_query = DocumentParser::normalize_text(query);
-        std::vector<std::string> matches = search_engine.search(clean_query);
+        // Pipeline phase: Tokenize search input string
+        std::vector<std::string> query_tokens = DocumentParser::tokenize(DocumentParser::normalize_text(raw_query));
+        std::vector<std::string> results = search_engine.search_multi(query_tokens);
 
-        if (matches.empty()) {
-            std::cout << "   ❌ Word not found in any indexed document.\n\n";
+        // Stop high-precision stop-watch
+        auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
+
+        // Display results
+        if (results.empty()) {
+            std::cout << "   ❌ No document perfectly matches intersection criteria.\n\n";
         } else {
-            std::cout << "   📄 Found in matching document(s):\n";
-            for (const std::string& doc : matches) {
+            std::cout << "   📄 Matching Documents:\n";
+            for (const auto& doc : results) {
                 std::cout << "      • " << doc << "\n";
             }
-            std::cout << "\n";
+            // Fallback display if time register rounds to absolute zero on fast CPUs
+            if (duration == 0) {
+                std::cout << "   ⏱️  Query Executed in: < 100 ns (Ultra-low latency hash hit)\n\n";
+            } else {
+                std::cout << "   ⏱️  Query Executed in: " << duration << " ns (" << (duration / 1000.0) << " us)\n\n";
+            }
         }
     }
 

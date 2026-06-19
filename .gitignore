@@ -1,0 +1,10 @@
+# Executables (The compiled app)
+*.exe
+search_engine
+
+# Developer Environment Settings (VS Code configs)
+.vscode/
+
+# Temporary Compiler Artifacts
+*.o
+*.obj
