@@ -2,24 +2,51 @@
 #include <string>
 #include <vector>
 #include "DocumentParser.hpp"
+#include "InvertedIndex.hpp"
 
 int main() {
-    std::string raw_user_text;
-    std::cout << "===============================================\n";
-    std::cout << "    Document Parser & Tokenizer Validation    \n";
-    std::cout << "===============================================\n";
-    std::cout << "Type a messy sentence (e.g., 'Hello, World! Data-Structures 101.'):\n\n> ";
-    
-    std::getline(std::cin, raw_user_text);
+    InvertedIndex search_engine;
 
-    // Process using our new architecture
-    std::string clean_text = DocumentParser::normalize_text(raw_user_text);
-    std::vector<std::string> tokens = DocumentParser::tokenize(clean_text);
+    // Simulate Document 1 content
+    std::string doc1_name = "doc1.txt";
+    std::string doc1_content = "Data structures and algorithms are fundamental to computer science.";
+    std::string clean_doc1 = DocumentParser::normalize_text(doc1_content);
+    std::vector<std::string> tokens_doc1 = DocumentParser::tokenize(clean_doc1);
+    search_engine.index_document(doc1_name, tokens_doc1);
 
-    std::cout << "\n✨ Cleaned Normalized Text: \"" << clean_text << "\"\n";
-    std::cout << "📦 Generated Tokens List:\n";
-    for (size_t i = 0; i < tokens.size(); ++i) {
-        std::cout << "  [" << i << "] -> " << tokens[i] << "\n";
+    // Simulate Document 2 content
+    std::string doc2_name = "doc2.txt";
+    std::string doc2_content = "Computer networks routing algorithms handle traffic processing efficiently.";
+    std::string clean_doc2 = DocumentParser::normalize_text(doc2_content);
+    std::vector<std::string> tokens_doc2 = DocumentParser::tokenize(clean_doc2);
+    search_engine.index_document(doc2_name, tokens_doc2);
+
+    std::cout << "===================================================\n";
+    std::cout << "    Day 4 Validation - Inverted Index Database    \n";
+    std::cout << "===================================================\n";
+    std::cout << "Indexed 2 documents successfully!\n";
+    std::cout << "Try searching for terms like 'algorithms', 'computer', or 'networks'.\n\n";
+
+    std::string query;
+    while (true) {
+        std::cout << "Search Term (or 'exit'): ";
+        std::cin >> query;
+
+        if (query == "exit") break;
+
+        // Normalize the search term to match index format
+        std::string clean_query = DocumentParser::normalize_text(query);
+        std::vector<std::string> matches = search_engine.search(clean_query);
+
+        if (matches.empty()) {
+            std::cout << "   ❌ Word not found in any indexed document.\n\n";
+        } else {
+            std::cout << "   📄 Found in matching document(s):\n";
+            for (const std::string& doc : matches) {
+                std::cout << "      • " << doc << "\n";
+            }
+            std::cout << "\n";
+        }
     }
 
     return 0;

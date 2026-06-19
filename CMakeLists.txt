@@ -13,6 +13,7 @@ include_directories(include)
 set(SOURCE_FILES
     src/Trie.cpp
     src/DocumentParser.cpp
+    src/InvertedIndex.cpp
     src/main.cpp
 )
 
